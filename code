@@ -1,0 +1,125 @@
+import RPi.GPIO as GPIO
+
+import time
+
+# GPIO pin setup
+
+red = 17
+
+green = 27
+
+blue = 22
+
+buttonPinRED = 5
+
+buttonPinGREEN = 6
+
+buttonPinBLUE = 13
+
+# Setup
+
+GPIO.setmode(GPIO.BCM)
+
+GPIO.setwarnings(False)
+
+# Output pins
+
+GPIO.setup(red, GPIO.OUT)
+
+GPIO.setup(green, GPIO.OUT)
+
+GPIO.setup(blue, GPIO.OUT)
+
+# Input pins with pull-up resistors
+
+GPIO.setup(buttonPinRED, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+GPIO.setup(buttonPinGREEN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+GPIO.setup(buttonPinBLUE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+def startup():
+
+    for color in [red, green, blue]:
+
+        GPIO.output(color, GPIO.HIGH)
+
+        time.sleep(0.25)
+
+        GPIO.output(color, GPIO.LOW)
+
+        time.sleep(0.25)
+
+        GPIO.output(color, GPIO.HIGH)
+
+        time.sleep(0.25)
+
+        GPIO.output(color, GPIO.LOW)
+
+def turn_off_all():
+
+    GPIO.output(red, GPIO.LOW)
+
+    GPIO.output(green, GPIO.LOW)
+
+    GPIO.output(blue, GPIO.LOW)
+    
+    
+startup()
+
+try:
+
+    while True:
+
+        redPressed = not GPIO.input(buttonPinRED)
+
+        greenPressed = not GPIO.input(buttonPinGREEN)
+
+        bluePressed = not GPIO.input(buttonPinBLUE)
+
+        turn_off_all()
+
+        if redPressed and not greenPressed and not bluePressed:
+
+            GPIO.output(red, GPIO.HIGH)
+
+        elif greenPressed and not redPressed and not bluePressed:
+
+            GPIO.output(green, GPIO.HIGH)
+
+        elif bluePressed and not redPressed and not greenPressed:
+
+            GPIO.output(blue, GPIO.HIGH)
+
+        elif redPressed and greenPressed and not bluePressed:
+
+            GPIO.output(red, GPIO.HIGH)
+
+            GPIO.output(green, GPIO.HIGH)
+
+        elif greenPressed and bluePressed and not redPressed:
+
+            GPIO.output(green, GPIO.HIGH)
+
+            GPIO.output(blue, GPIO.HIGH)
+
+        elif bluePressed and redPressed and not greenPressed:
+
+            GPIO.output(blue, GPIO.HIGH)
+
+            GPIO.output(red, GPIO.HIGH)
+
+        elif redPressed and greenPressed and bluePressed:
+
+            GPIO.output(red, GPIO.HIGH)
+
+            GPIO.output(green, GPIO.HIGH)
+
+            GPIO.output(blue, GPIO.HIGH)
+
+        time.sleep(1)
+except KeyboardInterrupt:
+
+#print("Exiting program...")
+
+    GPIO.cleanup()
